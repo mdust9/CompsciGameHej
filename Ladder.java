@@ -6,7 +6,7 @@ public class Ladder extends Element
     public Ladder(Location l, int h)
     {
         super(l);
-        myLoc = l;
+        myLoc = new Location(l.getX(), l.getY(), h,2);
         myHeight = h;
     }
     
