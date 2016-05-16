@@ -6,7 +6,7 @@ public class Player
     private Location myLoc;
     private Platform myPlatform;
     
-    public Player(int lives, Platform p)
+    public Player(Platform p)
     {
         myLives = 5;
         myLoc = new Location();
