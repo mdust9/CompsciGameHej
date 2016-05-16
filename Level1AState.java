@@ -7,18 +7,25 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import GUI.GamePanel;
 import Keys.Keys;
+import Objects.Location;
+import Objects.Obstacle;
+import Objects.Platform;
+import Objects.Player;
 
-
+//create method that generates objects
 public class Level1AState extends GameState {
 	
 	//private Background ???
 	
-	//private Player player;
-	//private TileMap tileMap;
-	//private ArrayList<Obstacle> obstacles;
+	private Player player;
+	private ArrayList<Obstacle> obstacles;
+	private ArrayList<Platform> platforms;
 	
-//GUI STUFF
+	private double oldTime;
+	
+	private Location end = new Location(1,5);
 	//private HUD hud;
 	//private BufferedImage hageonText;
 	//private Title title;
@@ -44,27 +51,19 @@ public class Level1AState extends GameState {
 		
 		// backgrounds(initiate here)
 		
-		// INITIATE LOCATIONMAP STUFF HERE
+		Platform p1 = new Platform(new Location(0,0), 1);
+		Platform p2 = new Platform(new Location(0,2), 0);
+		Platform p3 = new Platform(new Location(1,3), 2);
+		Platform p4 = new Platform(new Location(1,5), 0);
 		
-		// INITIATE PLAYER STUFF
-		/*player = new Player(tileMap);
-		player.setPosition(300, 161);
-		player.setHealth(PlayerSave.getHealth());
-		player.setLives(PlayerSave.getLives());
-		player.setTime(PlayerSave.getTime());*/
+		player = new Player(p1);
 		
-		// OBSTACLE STUFF HERE
-		/*obstacles = new ArrayList<Obstacle>();
-		populateEnemies();*/
+		obstacles.add(new Obstacle(new Location(5,5)));
 		
-		// init player
-		//player.init(enemies, energyParticles);
+		oldTime = System.currentTimeMillis()/1000;
 		
-		
-		// hud
 		//hud = new HUD(player);
 		
-		// title and subtitle GUI PEOPLE
 		/*try {
 			hageonText = ImageIO.read(
 				getClass().getResourceAsStream("/HUD/HageonTemple.gif")
@@ -78,9 +77,6 @@ public class Level1AState extends GameState {
 			e.printStackTrace();
 		}
 		*/
-		// teleport
-		/*teleport = new Teleport(tileMap);
-		teleport.setPosition(3700, 131);*/
 		
 		// start event
 		eventStart = true;
@@ -88,64 +84,21 @@ public class Level1AState extends GameState {
 		eventStart();
 	}
 	
-	//enemies
-	/*private void populateEnemies() {
-		enemies.clear();
-		GelPop gp;
-		Gazer g;
-		
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(1300, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(1320, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(1340, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(1660, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(1680, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(1700, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(2177, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(2960, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(2980, 100);
-		enemies.add(gp);
-		gp = new GelPop(tileMap, player);
-		gp.setPosition(3000, 100);
-		enemies.add(gp);
-		
-		g = new Gazer(tileMap);
-		g.setPosition(2600, 100);
-		enemies.add(g);
-		g = new Gazer(tileMap);
-		g.setPosition(3500, 100);
-		enemies.add(g);
-	}*/
 	
-	/*
 	public void update() {
 		
 		// check keys
 		handleInput();
 		
+		checkCollisions();
+		
 		// check if end of level event should start
-		if(teleport.contains(player)) {
+		if(player.getLocation().equals(end)) {//NEED .EQUALS METHOD
 			eventFinish = blockInput = true;
 		}
 		
 		// check if player dead event should start
-		if(player.getHealth() == 0 || player.gety() > tileMap.getHeight()) {
+		if(player.getLives() == 0) {
 			eventDead = blockInput = true;
 		}
 		
@@ -169,50 +122,21 @@ public class Level1AState extends GameState {
 		mountains.setPosition(tileMap.getx(), tileMap.gety());
 		
 		// update player
-		player.update();
+		//player.update();
 		
 		// update tilemap
-		tileMap.setPosition(
-			GamePanel.WIDTH / 2 - player.getx(),
-			GamePanel.HEIGHT / 2 - player.gety()
-		);
-		tileMap.update();
-		tileMap.fixBounds();
+		//tileMap.setPosition(
+			//GamePanel.WIDTH / 2 - player.getx(),
+			//GamePanel.HEIGHT / 2 - player.gety()
+		//);
+		//tileMap.update();
+		//tileMap.fixBounds();
 		
 		// update enemies
-		for(int i = 0; i < enemies.size(); i++) {
-			Enemy e = enemies.get(i);
-			e.update();
-			if(e.isDead()) {
-				enemies.remove(i);
-				i--;
-				explosions.add(new Explosion(tileMap, e.getx(), e.gety()));
-			}
+		if(((System.currentTimeMillis()/1000)-oldTime)%5==0){
+			obstacles.add(new Obstacle(new Location(5,5)));
 		}
-		
-		// update enemy projectiles
-		for(int i = 0; i < eprojectiles.size(); i++) {
-			EnemyProjectile ep = eprojectiles.get(i);
-			ep.update();
-			if(ep.shouldRemove()) {
-				eprojectiles.remove(i);
-				i--;
-			}
-		}
-		
-		// update explosions
-		for(int i = 0; i < explosions.size(); i++) {
-			explosions.get(i).update();
-			if(explosions.get(i).shouldRemove()) {
-				explosions.remove(i);
-				i--;
-			}
-		}
-		
-		// update teleport
-		teleport.update();
-		
-	}*/
+	}
 	
 	/*
 	public void draw(Graphics2D g) {
@@ -261,9 +185,10 @@ public class Level1AState extends GameState {
 		
 	}*/
 	
+	//LOOK AT THIS STUFFS
 	public void handleInput() {
 		if(Keys.isPressed(Keys.ESCAPE)) gsm.setPaused(true);
-		if(blockInput || player.getHealth() == 0) return;
+		if(blockInput || player.getLives() == 0) return;
 		player.setUp(Keys.keyState[Keys.UP]);
 		player.setLeft(Keys.keyState[Keys.LEFT]);
 		player.setDown(Keys.keyState[Keys.DOWN]);
@@ -285,7 +210,6 @@ public class Level1AState extends GameState {
 		populateEnemies();
 		blockInput = true;
 		eventCount = 0;
-		tileMap.setShaking(false, 0);
 		eventStart = true;
 		eventStart();
 		title = new Title(hageonText.getSubimage(0, 0, 178, 20));
@@ -323,8 +247,8 @@ public class Level1AState extends GameState {
 	private void eventDead() {
 		eventCount++;
 		if(eventCount == 1) {
-			player.setDead();
-			player.stop();
+			//player.setDead();
+			//player.stop();
 		}
 		if(eventCount == 60) {
 			tb.clear();
@@ -354,7 +278,6 @@ public class Level1AState extends GameState {
 	private void eventFinish() {
 		eventCount++;
 		if(eventCount == 1) {
-			JukeBox.play("teleport");
 			player.setTeleporting(true);
 			player.stop();
 		}
@@ -377,6 +300,14 @@ public class Level1AState extends GameState {
 			gsm.setState(GameStateManager.LEVEL1BSTATE);
 		}
 		
+	}
+	
+	public void checkCollisions(){
+		for(int x=0; x<=obstacles.size(); x++){
+			if (player.getLocation().equals(obstacles.get(x).getLocation())){
+				player.loselife();//check
+			}
+		}
 	}
 
 }
