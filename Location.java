@@ -82,4 +82,20 @@ public class Location
     {
         return yCo;
     }
+    
+    public boolean equals(Location otherLoc)
+    {
+        if (xCo == otherLoc.getX() && yCo == otherLoc.getY())
+            return true;
+        else
+            return false;
+    }
+    
+    public int compareTo(Location otherLoc)
+    {
+        if (yCo == otherLoc.getY())
+            return xCo = otherLoc.getX();
+        else
+            return yCo - otherLoc.getY();
+    }
 }
