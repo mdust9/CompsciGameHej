@@ -13,6 +13,11 @@ public class Player
         myPlatform = p;
     }
     
+    public int getLives()
+    {
+        return myLives;
+    }
+    
     public Location getLocation()
     {
         return myLoc;
