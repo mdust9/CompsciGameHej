@@ -144,4 +144,14 @@ public class Player
     {
         myLives -= 1;
     }
+    
+    public int getLives()
+    {
+        return myLives;
+    }
+    
+    public Polygon getPolygon()
+    {
+        return myPoly;
+    }
 }
