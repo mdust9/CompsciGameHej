@@ -14,6 +14,7 @@ import Objects.Obstacle;
 import Objects.Platform;
 import Objects.Player;
 
+//FOR PLAYER UPDATE - CHECK IF FALLING
 //create method that generates objects
 public class Level1AState extends GameState {
 	
@@ -22,6 +23,11 @@ public class Level1AState extends GameState {
 	private Player player;
 	private ArrayList<Obstacle> obstacles;
 	private ArrayList<Platform> platforms;
+	
+	Platform p1;
+	Platform p2;
+	Platform p3;
+	Platform p4;
 	
 	private double oldTime;
 	
@@ -51,14 +57,14 @@ public class Level1AState extends GameState {
 		
 		// backgrounds(initiate here)
 		
-		Platform p1 = new Platform(new Location(0,0), 1);
-		Platform p2 = new Platform(new Location(0,2), 0);
-		Platform p3 = new Platform(new Location(1,3), 2);
-		Platform p4 = new Platform(new Location(1,5), 0);
+		p1 = new Platform(new Location(0,0), 1, 5);
+		p2 = new Platform(new Location(0,2), 0, 5);
+		p3 = new Platform(new Location(1,3), 2, 5);
+		p4 = new Platform(new Location(1,5), 0, 5);
 		
 		player = new Player(p1);
 		
-		obstacles.add(new Obstacle(new Location(5,5)));
+		obstacles.add(new Obstacle(new Location(5,5), p4));
 		
 		oldTime = System.currentTimeMillis()/1000;
 		
@@ -106,7 +112,7 @@ public class Level1AState extends GameState {
 		if(eventStart) eventStart();
 		if(eventDead) eventDead();
 		if(eventFinish) eventFinish();
-		
+		/*
 		// move title and subtitle
 		if(title != null) {
 			title.update();
@@ -120,27 +126,18 @@ public class Level1AState extends GameState {
 		// move backgrounds
 		clouds.setPosition(tileMap.getx(), tileMap.gety());
 		mountains.setPosition(tileMap.getx(), tileMap.gety());
-		
-		// update player
-		//player.update();
-		
-		// update tilemap
-		//tileMap.setPosition(
-			//GamePanel.WIDTH / 2 - player.getx(),
-			//GamePanel.HEIGHT / 2 - player.gety()
-		//);
-		//tileMap.update();
-		//tileMap.fixBounds();
+		*/
 		
 		// update enemies
-		if(((System.currentTimeMillis()/1000)-oldTime)%5==0){
-			obstacles.add(new Obstacle(new Location(5,5)));
-		}
+		updateEnemies();
+		
+		// update player
+		updatePlayer();
 	}
 	
-	/*
+	
 	public void draw(Graphics2D g) {
-		
+		/*
 		// draw background
 		sky.draw(g);
 		clouds.draw(g);
@@ -182,21 +179,17 @@ public class Level1AState extends GameState {
 		for(int i = 0; i < tb.size(); i++) {
 			g.fill(tb.get(i));
 		}
-		
-	}*/
+		*/
+	}
 	
 	//LOOK AT THIS STUFFS
 	public void handleInput() {
 		if(Keys.isPressed(Keys.ESCAPE)) gsm.setPaused(true);
 		if(blockInput || player.getLives() == 0) return;
-		player.setUp(Keys.keyState[Keys.UP]);
-		player.setLeft(Keys.keyState[Keys.LEFT]);
-		player.setDown(Keys.keyState[Keys.DOWN]);
-		player.setRight(Keys.keyState[Keys.RIGHT]);
-		player.setJumping(Keys.keyState[Keys.BUTTON1]);
-		player.setDashing(Keys.keyState[Keys.BUTTON2]);
-		if(Keys.isPressed(Keys.BUTTON3)) player.setAttacking();
-		if(Keys.isPressed(Keys.BUTTON4)) player.setCharging();
+		if(Keys.keyState[Keys.UP]) player.climb();
+		if(Keys.keyState[Keys.LEFT]) player.moveLeft();
+		if(Keys.keyState[Keys.RIGHT]) player.moveLeft();
+		if(Keys.keyState[Keys.SPACE]) player.jump();
 	}
 
 ///////////////////////////////////////////////////////
@@ -204,7 +197,7 @@ public class Level1AState extends GameState {
 ///////////////////////////////////////////////////////
 	
 	// reset level
-	private void reset() {
+	/*private void reset() {
 		player.reset();
 		player.setPosition(300, 161);
 		populateEnemies();
@@ -216,7 +209,7 @@ public class Level1AState extends GameState {
 		title.sety(60);
 		subtitle = new Title(hageonText.getSubimage(0, 33, 91, 13));
 		subtitle.sety(85);
-	}
+	}*/
 	
 	// level started
 	private void eventStart() {
@@ -234,80 +227,48 @@ public class Level1AState extends GameState {
 			tb.get(2).y += 4;
 			tb.get(3).x += 6;
 		}
-		if(eventCount == 30) title.begin();
+		/*if(eventCount == 30) title.begin();
 		if(eventCount == 60) {
 			eventStart = blockInput = false;
 			eventCount = 0;
 			subtitle.begin();
 			tb.clear();
-		}
+		}*/
 	}
 	
 	// player has died
 	private void eventDead() {
-		eventCount++;
-		if(eventCount == 1) {
-			//player.setDead();
-			//player.stop();
-		}
-		if(eventCount == 60) {
-			tb.clear();
-			tb.add(new Rectangle(
-				GamePanel.WIDTH / 2, GamePanel.HEIGHT / 2, 0, 0));
-		}
-		else if(eventCount > 60) {
-			tb.get(0).x -= 6;
-			tb.get(0).y -= 4;
-			tb.get(0).width += 12;
-			tb.get(0).height += 8;
-		}
-		if(eventCount >= 120) {
-			if(player.getLives() == 0) {
-				gsm.setState(GameStateManager.MENUSTATE);
-			}
-			else {
-				eventDead = blockInput = false;
-				eventCount = 0;
-				player.loseLife();
-				reset();
-			}
-		}
+		gsm.setState(GameStateManager.MENUSTATE);
 	}
 	
 	// finished level
 	private void eventFinish() {
-		eventCount++;
-		if(eventCount == 1) {
-			player.setTeleporting(true);
-			player.stop();
-		}
-		else if(eventCount == 120) {
-			tb.clear();
-			tb.add(new Rectangle(
-				GamePanel.WIDTH / 2, GamePanel.HEIGHT / 2, 0, 0));
-		}
-		else if(eventCount > 120) {
-			tb.get(0).x -= 6;
-			tb.get(0).y -= 4;
-			tb.get(0).width += 12;
-			tb.get(0).height += 8;
-			JukeBox.stop("teleport");
-		}
-		if(eventCount == 180) {
-			PlayerSave.setHealth(player.getHealth());
-			PlayerSave.setLives(player.getLives());
-			PlayerSave.setTime(player.getTime());
-			gsm.setState(GameStateManager.LEVEL1BSTATE);
-		}
-		
+		gsm.setState(GameStateManager.MENUSTATE);
 	}
 	
 	public void checkCollisions(){
-		for(int x=0; x<=obstacles.size(); x++){
-			if (player.getLocation().equals(obstacles.get(x).getLocation())){
-				player.loselife();//check
+		for(Obstacle o: obstacles){
+			if (o.getPolygon().intersects(player.getLocation().getX(), player.getLocation().getY(), 1, 1)){
+				player.loseLife();//check
 			}
 		}
 	}
-
+	
+	public void updateEnemies(){
+		if(((System.currentTimeMillis()/1000)-oldTime)%5==0){
+			obstacles.add(new Obstacle(new Location(5,5), p4));
+		}
+		for(Obstacle o: obstacles){
+			o.move();
+		}
+	}
+	
+	public void updatePlayer(){
+		player.setPlatform(null);
+		for(Platform p: platforms){
+			if (p.getPolygon().intersects(player.getLocation().getX(), player.getLocation().getY(), 1, 1)){
+				player.setPlatform(p);
+			}
+		}	
+	}
 }
