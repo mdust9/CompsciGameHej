@@ -1,5 +1,3 @@
-//A LOT OF GUI STUFF HERE
-
 package GameState;
 
 import java.awt.Color;
@@ -10,7 +8,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import Keys.Keys;
-import Main.GamePanel;
+import GUI.GamePanel;
 
 
 public class MenuState extends GameState {
@@ -18,7 +16,7 @@ public class MenuState extends GameState {
 	private BufferedImage head;
 	
 	private int currentChoice = 0;
-	private String[] options = {"Start", "Instructions", "Quit"};//added Instructions
+	private String[] options = {"Start", "Instructions", "Quit", "Credits"};//added Instructions
 	
 	private Color titleColor;
 	private Font titleFont;
@@ -67,39 +65,46 @@ public class MenuState extends GameState {
 		// draw title
 		g.setColor(titleColor);
 		g.setFont(titleFont);
-		g.drawString("A R T I F A C T", 70, 90);
+		g.drawString("D U N K E Y  K O N G", 35, 90);
 		
 		// draw menu options
 		g.setFont(font);
 		g.setColor(Color.WHITE);
-		g.drawString("Start", 145, 165);
-		g.drawString("Quit", 145, 185);
+		g.drawString("Start", 145, 145);
+		g.drawString("Instructions", 145, 165);
+		g.drawString("Credits", 145, 185);
+		g.drawString("Exit", 145, 205);
+		g.drawString("Press Space to select an option", 60, 105);
 		
 		// draw floating head
-		if(currentChoice == 0) g.drawImage(head, 125, 154, null);
-		else if(currentChoice == 1) g.drawImage(head, 125, 174, null);
+		if(currentChoice == 0) g.drawImage(head, 125, 134, null);
+		else if(currentChoice == 1) g.drawImage(head, 125, 154, null);
+		else if(currentChoice==2) g.drawImage(head, 125, 174, null);
+		else if(currentChoice==3) g.drawImage(head, 125, 194, null);
 		
 		// other
 		g.setFont(font2);
-		g.drawString("2013 Mike S.", 10, 232);
+		g.drawString("AP Compsci 2016", 10, 232);
 		
 	}
 	
 	private void select() {
 		if(currentChoice == 0) {
-			//PlayerSave.init();
 			gsm.setState(GameStateManager.LEVEL1ASTATE);
 		}
 		else if(currentChoice == 1) {
-			gsm.setState(GameStateManager.INSTRUCTIONSSTATE);;
+			gsm.setState(GameStateManager.INSTRUCTIONSSTATE);
 		}
 		else if(currentChoice == 2) {
+			gsm.setState(GameStateManager.CREDITSSTATE);
+		}
+		else if(currentChoice == 3){
 			System.exit(0);
 		}
 	}
 	
 	public void handleInput() {
-		if(Keys.isPressed(Keys.ENTER)) select();
+		if(Keys.isPressed(Keys.SPACE)) select();
 		if(Keys.isPressed(Keys.UP)) {
 			if(currentChoice > 0) {
 				currentChoice--;
@@ -113,13 +118,3 @@ public class MenuState extends GameState {
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
